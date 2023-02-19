@@ -95,3 +95,7 @@ ENV/
 .ropeproject
 
 .imdone
+
+.idea
+.DS_Store
+
