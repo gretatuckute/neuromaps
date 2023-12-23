@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Try transforms
+Script to perform transforms. Specify via flags
 """
+import os
+
 vwfa = False
-tom = True
+tom = False
+lang_parcel_to_fsaverage = True
 
 from neuromaps import datasets
 from neuromaps.transforms import *
@@ -71,3 +74,22 @@ if tom:
         plotting.plot_roi(roi_transformed_linear, title=f'{roi_name} linear')
         plotting.plot_roi(roi_transformed_nearest, title=f'{roi_name} nearest')
         plt.show()
+
+if lang_parcel_to_fsaverage:
+    """
+    Transform our MNI lang parcel in the volume to fsaverage
+    """
+
+    # '/Users/gt/Documents/GitHub/fMRI_prep/data/ROIs/ROIs_Nov2020/Func_Lang_LHRH_SN220/allParcels_language.nii'
+
+    mni_lang_parcel_to_fsaverage_nearest = mni152_to_fsaverage(img=mni_lang_parcel,
+                                                       method='nearest',
+                                                       fsavg_density='164k')
+    # Nearest is recommended for parcels
+
+    # Save it as a gifti in the original dir # 'lh.parcels_language_fsaverage.gii'
+    path = '/Users/gt/Documents/GitHub/fMRI_prep/data/ROIs/ROIs_Nov2020/Func_Lang_LHRH_SN220/'
+
+    mni_lang_parcel_to_fsaverage_nearest[0].to_filename(os.path.join(path, 'lh.parcels_language_fsaverage.gii'))
+    mni_lang_parcel_to_fsaverage_nearest[1].to_filename(os.path.join(path, 'rh.parcels_language_fsaverage.gii'))
+
