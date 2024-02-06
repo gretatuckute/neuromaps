@@ -6,7 +6,9 @@ import os
 
 vwfa = False
 tom = False
-lang_parcel_to_fsaverage = True
+glasser = True
+lang_parcel_to_fsaverage = False
+speech_parcel_to_fsaverage = False
 
 from neuromaps import datasets
 from neuromaps.transforms import *
@@ -75,6 +77,41 @@ if tom:
         plotting.plot_roi(roi_transformed_nearest, title=f'{roi_name} nearest')
         plt.show()
 
+
+if glasser:
+    dir = '/Users/gt/Documents/GitHub/fMRI_prep/data/ROIs/glasser/from_original_source/'
+    # From the original source: https://figshare.com/articles/dataset/HCP-MMP1_0_projected_on_MNI2009a_GM_volumetric_in_NIfTI_format/3501911
+
+    fname_orig = 'HCPMMP1_on_MNI152_ICBM2009a_nlin.nii.gz'
+
+    # Load and transform
+    glasser = nib.load(join(dir, fname_orig))
+
+    roi_transformed_nearest = mni152_to_mni152(img=glasser,
+                            target=mni_lang_parcel,
+                            method='nearest')
+
+    # Unique values in the transformed ROI
+    unique_vals = np.unique(roi_transformed_nearest.get_fdata())
+
+    # Plot
+    plt.figure()
+    plotting.plot_roi(roi_transformed_nearest, title='Glasser nearest')
+    plt.show()
+
+    # Save
+    nib.save(roi_transformed_nearest, join(dir, f'HCPMMP1_on_MNI152_ICBM2009a_nlin_MNI152_nearest.nii.gz'))
+
+
+
+
+
+
+
+
+
+
+
 if lang_parcel_to_fsaverage:
     """
     Transform our MNI lang parcel in the volume to fsaverage
@@ -93,3 +130,20 @@ if lang_parcel_to_fsaverage:
     mni_lang_parcel_to_fsaverage_nearest[0].to_filename(os.path.join(path, 'lh.parcels_language_fsaverage.gii'))
     mni_lang_parcel_to_fsaverage_nearest[1].to_filename(os.path.join(path, 'rh.parcels_language_fsaverage.gii'))
 
+if speech_parcel_to_fsaverage:
+    """
+    Transform our MNI speech parcel in the volume to fsaverage
+    (from /om5/group/evlab/u/heesok/parcels/SpeechLoc/GSS_speechLoc_NT_n17_fROIs.nii)
+    """
+
+    mni_speech_parcel = nib.load('/Users/gt/Documents/GitHub/fMRI_prep/data/ROIs/ROIs_Nov2020/Func_Speech_NQ17/GSS_speechLoc_NT_n17_fROIs.nii')
+
+    mni_speech_parcel_to_fsaverage_nearest = mni152_to_fsaverage(img=mni_speech_parcel,
+                                                         method='nearest',
+                                                         fsavg_density='164k')
+
+    # Save it as a gifti in the original dir # 'lh.parcels_speech_fsaverage.gii'
+    path = '/Users/gt/Documents/GitHub/fMRI_prep/data/ROIs/ROIs_Nov2020/Func_Speech_NQ17/'
+
+    mni_speech_parcel_to_fsaverage_nearest[0].to_filename(os.path.join(path, 'lh.parcels_speech_fsaverage.gii'))
+    mni_speech_parcel_to_fsaverage_nearest[1].to_filename(os.path.join(path, 'rh.parcels_speech_fsaverage.gii'))
