@@ -6,9 +6,10 @@ import os
 
 vwfa = False
 tom = False
-glasser = True
+glasser = False
 lang_parcel_to_fsaverage = False
-speech_parcel_to_fsaverage = False
+speech_parcel_to_fsaverage = False # Old n=17 speech parcel
+speech_parcel_NQ36_to_fsaverage = True # New n=36 speech parcel
 
 from neuromaps import datasets
 from neuromaps.transforms import *
@@ -103,15 +104,6 @@ if glasser:
     nib.save(roi_transformed_nearest, join(dir, f'HCPMMP1_on_MNI152_ICBM2009a_nlin_MNI152_nearest.nii.gz'))
 
 
-
-
-
-
-
-
-
-
-
 if lang_parcel_to_fsaverage:
     """
     Transform our MNI lang parcel in the volume to fsaverage
@@ -147,3 +139,29 @@ if speech_parcel_to_fsaverage:
 
     mni_speech_parcel_to_fsaverage_nearest[0].to_filename(os.path.join(path, 'lh.parcels_speech_fsaverage.gii'))
     mni_speech_parcel_to_fsaverage_nearest[1].to_filename(os.path.join(path, 'rh.parcels_speech_fsaverage.gii'))
+
+if speech_parcel_NQ36_to_fsaverage:
+    """
+    Transform our MNI speech parcel in the volume to fsaverage
+    See /Users/gt/Documents/GitHub/fMRI_prep/data/ROIs/ROIs_Nov2020/Func_Speech_NQ_36/README.txt
+    """
+
+    mni_speech_parcel_raw = nib.load('/Users/gt/Documents/GitHub/fMRI_prep/data/ROIs/ROIs_Nov2020/Func_Speech_NQ_36/GSS_speechLoc_NT_n36_fROIs.nii')
+    mni_speech_parcel_raw_to_fsaverage_nearest = mni152_to_fsaverage(img=mni_speech_parcel_raw,
+                                                         method='nearest',
+                                                         fsavg_density='164k')
+
+    # Save it as a gifti in the original dir # 'lh.parcels_speech_fsaverage.gii'
+    path = '/Users/gt/Documents/GitHub/fMRI_prep/data/ROIs/ROIs_Nov2020/Func_Speech_NQ_36/'
+
+    mni_speech_parcel_raw_to_fsaverage_nearest[0].to_filename(os.path.join(path, 'lh.parcels_speech_NQ36_raw_fsaverage.gii'))
+    mni_speech_parcel_raw_to_fsaverage_nearest[1].to_filename(os.path.join(path, 'rh.parcels_speech_NQ36_raw_fsaverage.gii'))
+
+    # Do the symmetrical version
+    mni_speech_parcel_sym = nib.load('/Users/gt/Documents/GitHub/fMRI_prep/data/ROIs/ROIs_Nov2020/Func_Speech_NQ_36/speech_LH_1_5_mirrored_conjunction_final.nii')
+    mni_speech_parcel_sym_to_fsaverage_nearest = mni152_to_fsaverage(img=mni_speech_parcel_sym,
+                                                         method='nearest',
+                                                         fsavg_density='164k')
+
+    mni_speech_parcel_sym_to_fsaverage_nearest[0].to_filename(os.path.join(path, 'lh.parcels_speech_NQ36_sym_fsaverage.gii'))
+    mni_speech_parcel_sym_to_fsaverage_nearest[1].to_filename(os.path.join(path, 'rh.parcels_speech_NQ36_sym_fsaverage.gii'))
